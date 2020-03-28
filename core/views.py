@@ -5,6 +5,10 @@ from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+# from rest_framework import generics
+
+from rest_framework.permissions import IsAuthenticated
+
 from .serializers import PostSerializer
 from .models import Post
 
@@ -18,6 +22,8 @@ class TestView(APIView):
     #         'age': 23
     #     }
     #     return Response(data)
+
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
         qs = Post.objects.all()
