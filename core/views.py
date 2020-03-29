@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-# from rest_framework import generics
+from rest_framework import generics, mixins
 
 from rest_framework.permissions import IsAuthenticated
 
@@ -16,12 +16,6 @@ from .models import Post
 # Create your views here.
 
 class TestView(APIView):
-    # def get(self, request, *args, **kwargs):
-    #     data = {
-    #         'name': 'john',
-    #         'age': 23
-    #     }
-    #     return Response(data)
 
     permission_classes = (IsAuthenticated,)
 
@@ -40,6 +34,48 @@ class TestView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
+
+
+class PostView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+
+    serializer_class = PostSerializer
+    queryset = Post.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+# Other way
+
+
+class PostCreateView(mixins.ListModelMixin, generics.CreateAPIView):
+
+    serializer_class = PostSerializer
+    queryset = Post.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+
+# Other way
+
+
+class PostListCreateView(generics.ListCreateAPIView):
+
+    serializer_class = PostSerializer
+    queryset = Post.objects.all()
+
+# Basics
+
+# class TestView(APIView):
+#     def get(self, request, *args, **kwargs):
+#         data = {
+#             'name': 'john',
+#             'age': 23
+#         }
+#         return Response(data)
 
 
 # def test_view(request):
